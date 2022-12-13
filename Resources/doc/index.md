@@ -303,7 +303,7 @@ class Client extends BaseClient
                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Acme\ApiBundle\Document\Client" db="acme" collection="oauthClient" customId="true">
-        <field fieldName="id" id="true" strategy="AUTO" />
+        <field field-name="id" id="true" strategy="AUTO" />
     </document>
 
 </doctrine-mongo-mapping>
@@ -345,7 +345,7 @@ class AuthCode extends BaseAuthCode
                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Acme\ApiBundle\Document\AuthCode" db="acme" collection="oauthAuthCode" customId="true">
-        <field fieldName="id" id="true" strategy="AUTO" />
+        <field field-name="id" id="true" strategy="AUTO" />
         <reference-one target-document="Acme\ApiBundle\Document\Client" field="client" />
     </document>
 
@@ -388,7 +388,7 @@ class AccessToken extends BaseAccessToken
                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Acme\ApiBundle\Document\AccessToken" db="acme" collection="oauthAccessToken" customId="true">
-        <field fieldName="id" id="true" strategy="AUTO" />
+        <field field-name="id" id="true" strategy="AUTO" />
         <reference-one target-document="Acme\ApiBundle\Document\Client" field="client" />
     </document>
 
@@ -431,7 +431,7 @@ class RefreshToken extends BaseRefreshToken
                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Acme\ApiBundle\Document\RefreshToken" db="acme" collection="oauthRefreshToken" customId="true">
-        <field fieldName="id" id="true" strategy="AUTO" />
+        <field field-name="id" id="true" strategy="AUTO" />
         <reference-one target-document="Acme\ApiBundle\Document\Client" field="client" />
     </document>
 
