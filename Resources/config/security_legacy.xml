@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <!-- Legacy Symfony 5.x authentication system (provider + listener). Loaded only on Symfony < 6.0. -->
+    <parameters>
+        <parameter key="fos_oauth_server.security.authentication.provider.class">FOS\OAuthServerBundle\Security\Authentication\Provider\OAuthProvider</parameter>
+        <parameter key="fos_oauth_server.security.authentication.listener.class">FOS\OAuthServerBundle\Security\Firewall\OAuthListener</parameter>
+    </parameters>
+
+    <services>
+        <service id="fos_oauth_server.security.authentication.provider" class="%fos_oauth_server.security.authentication.provider.class%" public="false">
+            <argument /> <!-- user provider -->
+            <argument type="service" id="fos_oauth_server.server" />
+            <argument type="service" id="security.user_checker" />
+        </service>
+
+        <service id="fos_oauth_server.security.authentication.listener" class="%fos_oauth_server.security.authentication.listener.class%" public="false">
+            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="security.authentication.manager" />
+            <argument type="service" id="fos_oauth_server.server" />
+        </service>
+    </services>
+</container>

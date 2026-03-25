@@ -40,8 +40,11 @@ class FOSOAuthServerExtension extends Extension
             $loader->load(sprintf('%s.xml', $config['db_driver']));
         }
 
-        foreach (['oauth', 'security'] as $basename) {
-            $loader->load(sprintf('%s.xml', $basename));
+        $loader->load('oauth.xml');
+        $loader->load('security.xml');
+
+        if (interface_exists(\Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface::class)) {
+            $loader->load('security_legacy.xml');
         }
 
         $container->setAlias('fos_oauth_server.storage', $config['service']['storage']);

@@ -67,6 +67,14 @@ class OAuthFactory implements AuthenticatorFactoryInterface, SecurityFactoryInte
     }
 
     /**
+     * Required by AuthenticatorFactoryInterface in Symfony 6.x (replaces getPosition()).
+     */
+    public function getPriority(): int
+    {
+        return -10;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getKey()

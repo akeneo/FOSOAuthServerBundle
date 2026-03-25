@@ -63,10 +63,6 @@ class OAuthAuthenticator implements AuthenticatorInterface
      */
     public function createAuthenticatedToken(PassportInterface $passport, string $firewallName): TokenInterface
     {
-        if (!$passport instanceof Passport) {
-            throw new \RuntimeException(sprintf('Cannot create a OAuth2 authenticated token. $passport should be a %s', Passport::class));
-        }
-
         $token = $this->createToken($passport, $firewallName);
         $token->setAuthenticated(true);
 
