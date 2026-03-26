@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace FOS\OAuthServerBundle;
 
 use FOS\OAuthServerBundle\DependencyInjection\Compiler\GrantExtensionsCompilerPass;
+use FOS\OAuthServerBundle\DependencyInjection\Compiler\PasswordHasherCompilerPass;
 use FOS\OAuthServerBundle\DependencyInjection\Compiler\RequestStackCompilerPass;
 use FOS\OAuthServerBundle\DependencyInjection\FOSOAuthServerExtension;
 use FOS\OAuthServerBundle\DependencyInjection\Security\Factory\OAuthFactory;
@@ -34,9 +35,14 @@ class FOSOAuthServerBundle extends Bundle
 
         /** @var SecurityExtension $extension */
         $extension = $container->getExtension('security');
-        $extension->addSecurityListenerFactory(new OAuthFactory());
+        if (method_exists($extension, 'addAuthenticatorFactory')) {
+            $extension->addAuthenticatorFactory(new OAuthFactory());
+        } else {
+            $extension->addSecurityListenerFactory(new OAuthFactory());
+        }
 
         $container->addCompilerPass(new GrantExtensionsCompilerPass());
         $container->addCompilerPass(new RequestStackCompilerPass());
+        $container->addCompilerPass(new PasswordHasherCompilerPass());
     }
 }

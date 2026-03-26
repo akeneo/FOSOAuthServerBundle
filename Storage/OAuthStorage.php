@@ -28,7 +28,6 @@ use OAuth2\Model\IOAuth2Client;
 use OAuth2\OAuth2;
 use OAuth2\OAuth2ServerException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -60,9 +59,9 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
     protected $userProvider;
 
     /**
-     * @var EncoderFactoryInterface
+     * @var object|null EncoderFactoryInterface (Symfony 5.x) or UserPasswordHasherInterface (Symfony 6.x)
      */
-    protected $encoderFactory;
+    protected $passwordHandler;
 
     /**
      * @var array [uri] => GrantExtensionInterface
@@ -71,14 +70,14 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
 
     public function __construct(ClientManagerInterface $clientManager, AccessTokenManagerInterface $accessTokenManager,
         RefreshTokenManagerInterface $refreshTokenManager, AuthCodeManagerInterface $authCodeManager,
-        UserProviderInterface $userProvider = null, EncoderFactoryInterface $encoderFactory = null)
+        UserProviderInterface $userProvider = null, object $passwordHandler = null)
     {
         $this->clientManager = $clientManager;
         $this->accessTokenManager = $accessTokenManager;
         $this->refreshTokenManager = $refreshTokenManager;
         $this->authCodeManager = $authCodeManager;
         $this->userProvider = $userProvider;
-        $this->encoderFactory = $encoderFactory;
+        $this->passwordHandler = $passwordHandler;
 
         $this->grantExtensions = [];
     }
@@ -152,13 +151,23 @@ class OAuthStorage implements IOAuth2RefreshTokens, IOAuth2GrantUser, IOAuth2Gra
         }
 
         try {
-            $user = $this->userProvider->loadUserByUsername($username);
+            if (method_exists($this->userProvider, 'loadUserByIdentifier')) {
+                $user = $this->userProvider->loadUserByIdentifier($username);
+            } else {
+                $user = $this->userProvider->loadUserByUsername($username);
+            }
         } catch (AuthenticationException $e) {
             return false;
         }
 
-        $encoder = $this->encoderFactory->getEncoder($user);
-        if ($encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
+        if ($this->passwordHandler instanceof \Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface) {
+            $valid = $this->passwordHandler->isPasswordValid($user, $password);
+        } else {
+            $encoder = $this->passwordHandler->getEncoder($user);
+            $valid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        }
+
+        if ($valid) {
             return [
                 'data' => $user,
             ];
