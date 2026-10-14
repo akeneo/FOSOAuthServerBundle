@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
         $treeBuilder = new TreeBuilder('fos_oauth_server');
         $rootNode = $treeBuilder->getRootNode();

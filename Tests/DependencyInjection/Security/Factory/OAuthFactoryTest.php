@@ -17,7 +17,6 @@ use FOS\OAuthServerBundle\DependencyInjection\Security\Factory\OAuthFactory;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -39,9 +38,9 @@ class OAuthFactoryTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
     }
 
-    public function testGetPosition(): void
+    public function testGetPriority(): void
     {
-        $this->assertSame('pre_auth', $this->instance->getPosition());
+        $this->assertSame(-10, $this->instance->getPriority());
     }
 
     public function testGetKey(): void
@@ -49,68 +48,21 @@ class OAuthFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('fos_oauth', $this->instance->getKey());
     }
 
-    public function testCreate(): void
+    public function testCreateAuthenticator(): void
     {
-        $container = $this->getMockBuilder(ContainerBuilder::class)
-            ->disableOriginalConstructor()
-            ->setMethods([
-                'setDefinition',
-            ])
-            ->getMock()
-        ;
-        $id = '12';
-        $config = [];
+        $container = new ContainerBuilder();
+        $id = 'api';
         $userProvider = 'mock.user.provider.service';
-        $defaultEntryPoint = '';
 
-        $definition = $this->getMockBuilder(Definition::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $authenticatorId = $this->instance->createAuthenticator($container, $id, [], $userProvider);
 
-        $container
-            ->expects($this->exactly(2))
-            ->method('setDefinition')
-            ->withConsecutive(
-                [
-                    'security.authentication.provider.fos_oauth_server.'.$id,
-                    new ChildDefinition('fos_oauth_server.security.authentication.provider'),
-                ],
-                [
-                    'security.authentication.listener.fos_oauth_server.'.$id,
-                    new ChildDefinition('fos_oauth_server.security.authentication.listener'),
-                ]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $definition,
-                null
-            )
-        ;
-
-        $definition
-            ->expects($this->exactly(2))
-            ->method('replaceArgument')
-            ->withConsecutive(
-                [
-                    0,
-                    new Reference($userProvider),
-                ],
-                [
-                    2,
-                    new Reference('security.user_checker.'.$id),
-                ]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $definition,
-                $definition
-            )
-        ;
-
-        $this->assertSame([
-            'security.authentication.provider.fos_oauth_server.'.$id,
-            'security.authentication.listener.fos_oauth_server.'.$id,
-            'fos_oauth_server.security.entry_point',
-        ], $this->instance->create($container, $id, $config, $userProvider, $defaultEntryPoint));
+        $this->assertSame('fos_oauth_server.security.authentication.authenticator.'.$id, $authenticatorId);
+        $definition = $container->getDefinition($authenticatorId);
+        $this->assertInstanceOf(ChildDefinition::class, $definition);
+        $this->assertSame('fos_oauth_server.security.authentication.authenticator', $definition->getParent());
+        $this->assertEquals(new Reference('fos_oauth_server.server'), $definition->getArgument(0));
+        $this->assertEquals(new Reference('security.user_checker.'.$id), $definition->getArgument(1));
+        $this->assertEquals(new Reference($userProvider), $definition->getArgument(2));
     }
 
     public function testAddConfigurationDoesNothing(): void
@@ -119,6 +71,7 @@ class OAuthFactoryTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->assertNull($this->instance->addConfiguration($nodeDefinition));
+        $this->instance->addConfiguration($nodeDefinition);
+        $this->addToAssertionCount(1);
     }
 }

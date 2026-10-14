@@ -23,7 +23,7 @@ use OAuth2\OAuth2;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -98,12 +98,12 @@ class AuthorizeControllerTest extends \PHPUnit\Framework\TestCase
     protected $request;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ParameterBag
+     * @var \PHPUnit\Framework\MockObject\MockObject|InputBag
      */
     protected $requestQuery;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ParameterBag
+     * @var \PHPUnit\Framework\MockObject\MockObject|InputBag
      */
     protected $requestRequest;
 
@@ -193,11 +193,11 @@ class AuthorizeControllerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->requestQuery = $this->getMockBuilder(ParameterBag::class)
+        $this->requestQuery = $this->getMockBuilder(InputBag::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->requestRequest = $this->getMockBuilder(ParameterBag::class)
+        $this->requestRequest = $this->getMockBuilder(InputBag::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -431,7 +431,6 @@ class AuthorizeControllerTest extends \PHPUnit\Framework\TestCase
             ->expects($this->at(2))
             ->method('set')
             ->with('_fos_oauth_server.ensure_logout', true)
-            ->willReturn(null)
         ;
 
         $propertyReflection = new \ReflectionProperty(AuthorizeController::class, 'client');

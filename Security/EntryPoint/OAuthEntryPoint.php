@@ -29,7 +29,7 @@ class OAuthEntryPoint implements AuthenticationEntryPointInterface
         $this->serverService = $serverService;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): \Symfony\Component\HttpFoundation\Response
     {
         $exception = new OAuth2AuthenticateException(
             Response::HTTP_UNAUTHORIZED,

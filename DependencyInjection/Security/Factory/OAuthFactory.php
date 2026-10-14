@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace FOS\OAuthServerBundle\DependencyInjection\Security\Factory;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
-use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,9 +24,9 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @author Arnaud Le Blanc <arnaud.lb@gmail.com>
  */
-class OAuthFactory implements AuthenticatorFactoryInterface, SecurityFactoryInterface
+class OAuthFactory implements AuthenticatorFactoryInterface
 {
-    public function createAuthenticator(ContainerBuilder $container, string $id, array $config, string $userProviderId)
+    public function createAuthenticator(ContainerBuilder $container, string $id, array $config, string $userProviderId): string
     {
         $providerId = 'fos_oauth_server.security.authentication.authenticator.'.$id;
         $container
@@ -40,36 +39,15 @@ class OAuthFactory implements AuthenticatorFactoryInterface, SecurityFactoryInte
         return $providerId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
+    public function getPriority(): int
     {
-        $providerId = 'security.authentication.provider.fos_oauth_server.'.$id;
-        $container
-            ->setDefinition($providerId, new ChildDefinition('fos_oauth_server.security.authentication.provider'))
-            ->replaceArgument(0, new Reference($userProvider))
-            ->replaceArgument(2, new Reference('security.user_checker.'.$id))
-        ;
-
-        $listenerId = 'security.authentication.listener.fos_oauth_server.'.$id;
-        $container->setDefinition($listenerId, new ChildDefinition('fos_oauth_server.security.authentication.listener'));
-
-        return [$providerId, $listenerId, 'fos_oauth_server.security.entry_point'];
+        return -10;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPosition()
-    {
-        return 'pre_auth';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return 'fos_oauth';
     }
@@ -77,7 +55,7 @@ class OAuthFactory implements AuthenticatorFactoryInterface, SecurityFactoryInte
     /**
      * {@inheritdoc}
      */
-    public function addConfiguration(NodeDefinition $node)
+    public function addConfiguration(NodeDefinition $node): void
     {
     }
 }
