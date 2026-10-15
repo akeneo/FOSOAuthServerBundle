@@ -18,6 +18,8 @@ use OAuth2\OAuth2;
 
 class Client implements ClientInterface
 {
+    use ClientUserTrait;
+
     /**
      * @var int
      */
