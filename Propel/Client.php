@@ -14,12 +14,15 @@ declare(strict_types=1);
 namespace FOS\OAuthServerBundle\Propel;
 
 use FOS\OAuthServerBundle\Model\ClientInterface;
+use FOS\OAuthServerBundle\Model\ClientUserTrait;
 use FOS\OAuthServerBundle\Propel\om\BaseClient;
 use FOS\OAuthServerBundle\Util\Random;
 use OAuth2\OAuth2;
 
 class Client extends BaseClient implements ClientInterface
 {
+    use ClientUserTrait;
+
     public function __construct()
     {
         parent::__construct();
