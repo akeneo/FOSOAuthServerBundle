@@ -19,11 +19,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class TestCase extends WebTestCase
 {
-    /**
-     * @var KernelInterface|null
-     */
-    protected static $kernel;
-
     protected function setUp(): void
     {
         $fs = new Filesystem();
@@ -38,7 +33,7 @@ abstract class TestCase extends WebTestCase
     /**
      * @param array<mixed> $options
      */
-    protected static function createKernel(array $options = [])
+    protected static function createKernel(array $options = []): KernelInterface
     {
         $env = @$options['env'] ?: 'test';
 

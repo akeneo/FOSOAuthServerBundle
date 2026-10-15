@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+DG\BypassFinals::enable();
+
 // require Propel
 if (file_exists($file = __DIR__.'/../vendor/propel/propel1/generator/lib/util/PropelQuickBuilder.php')) {
     set_include_path(__DIR__.'/../vendor/phing/phing/classes'.PATH_SEPARATOR.get_include_path());

@@ -42,7 +42,7 @@ class User implements UserInterface
         return $this->id;
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
         return ['ROLE_USER'];
     }
@@ -57,7 +57,7 @@ class User implements UserInterface
         $this->password = $password;
     }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
@@ -65,6 +65,11 @@ class User implements UserInterface
     public function getUsername()
     {
         return $this->getId();
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->getUsername();
     }
 
     public function eraseCredentials(): void

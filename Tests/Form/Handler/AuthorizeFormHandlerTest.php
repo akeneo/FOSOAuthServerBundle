@@ -18,7 +18,7 @@ use FOS\OAuthServerBundle\Form\Model\Authorize;
 use Symfony\Bundle\FrameworkBundle\Tests\Fixtures\Serialization\Author;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -38,11 +38,11 @@ class AuthorizeFormHandlerTest extends \PHPUnit\Framework\TestCase
      */
     protected $request;
     /**
-     * @var ParameterBag&\PHPUnit\Framework\MockObject\MockObject
+     * @var InputBag&\PHPUnit\Framework\MockObject\MockObject
      */
     protected $requestQuery;
     /**
-     * @var ParameterBag&\PHPUnit\Framework\MockObject\MockObject
+     * @var InputBag&\PHPUnit\Framework\MockObject\MockObject
      */
     protected $requestRequest;
     /**
@@ -65,11 +65,11 @@ class AuthorizeFormHandlerTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->requestQuery = $this->getMockBuilder(ParameterBag::class)
+        $this->requestQuery = $this->getMockBuilder(InputBag::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
-        $this->requestRequest = $this->getMockBuilder(ParameterBag::class)
+        $this->requestRequest = $this->getMockBuilder(InputBag::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -204,7 +204,7 @@ class AuthorizeFormHandlerTest extends \PHPUnit\Framework\TestCase
         ;
         $this->instance = new AuthorizeFormHandler($this->form, $requestStack);
 
-        $request = new \stdClass();
+        $request = new Request();
 
         $requestStack
             ->expects($this->once())
@@ -222,17 +222,17 @@ class AuthorizeFormHandlerTest extends \PHPUnit\Framework\TestCase
         $this->instance = new AuthorizeFormHandler($this->form, null);
         $this->instance->setContainer($this->container);
 
-        $randomData = \random_bytes(10);
+        $request = new Request();
 
         $this->container
             ->expects($this->at(0))
             ->method('get')
             ->with('request')
-            ->willReturn($randomData)
+            ->willReturn($request)
         ;
 
         $method = $this->getReflectionMethod('getCurrentRequest');
-        $this->assertSame($randomData, $method->invoke($this->instance));
+        $this->assertSame($request, $method->invoke($this->instance));
     }
 
     /**

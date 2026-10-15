@@ -20,10 +20,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'fos:oauth-server:create-client', description: 'Creates a new client')]
 class CreateClientCommand extends Command
 {
-    protected static $defaultName = 'fos:oauth-server:create-client';
-
     private $clientManager;
 
     public function __construct(ClientManagerInterface $clientManager)
@@ -41,7 +40,6 @@ class CreateClientCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Creates a new client')
             ->addOption(
                 'redirect-uri',
                 null,
